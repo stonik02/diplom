@@ -5,8 +5,10 @@ def ql(Wk, c, pi, h, l_moda):
     return math.sqrt(math.pow(Wk, 2) / math.pow(c, 2) - math.pow(pi, 2) / math.pow(h, 2) * math.pow(l_moda - 1 / 2, 2))
 
 
-def depth(y_point):
-    return y_point * 0.02
+def depth(y_point, k):
+    # if y_point < 300:
+    #     return y_point * 0.02
+    return y_point * k
 
 
 def refractive_index(x, y):
@@ -28,8 +30,8 @@ def gradient(point):
     return [grad_x, grad_y]
 
 
-def refractive_index_v2(y, Wk, c, l, ql0, pi):
-    h = depth(y)
+def refractive_index_v2(y, Wk, c, l, ql0, pi, k):
+    h = depth(y, k)
     ql_point = ql(Wk, c, pi, h, l)
     n = ql_point / ql0
     # print("refractive_index_v2 n = ", n)
@@ -42,7 +44,7 @@ def refractive_index_v2(y, Wk, c, l, ql0, pi):
 '''
 
 
-def gradient_v2(point, ql0, Wk, c, l, pi):
+def gradient_v2(point, ql0, Wk, c, l, pi, h_k):
     y_point = point[1]  # Координата y
 
     step = 50
@@ -55,10 +57,10 @@ def gradient_v2(point, ql0, Wk, c, l, pi):
     # print("H y_point ", depth(y_point))
     # print("H y_point + delta_y = ", depth(y_point + delta_y))
 
-    grad_x = (refractive_index_v2(y_point, Wk, c, l, ql0, pi) - refractive_index_v2(y_point, Wk, c, l, ql0, pi)) / (
+    grad_x = (refractive_index_v2(y_point, Wk, c, l, ql0, pi, h_k) - refractive_index_v2(y_point, Wk, c, l, ql0, pi, h_k)) / (
             2 * delta_x)
-    grad_y = (refractive_index_v2(y_point + delta_y, Wk, c, l, ql0, pi) - refractive_index_v2(y_point - delta_y, Wk, c,
-                                                                                              l, ql0, pi)) / (
+    grad_y = (refractive_index_v2(y_point + delta_y, Wk, c, l, ql0, pi, h_k) - refractive_index_v2(y_point - delta_y, Wk, c,
+                                                                                              l, ql0, pi, h_k)) / (
                      2 * delta_y)
     # print([grad_x, grad_y])
     return [grad_x, grad_y]
@@ -77,6 +79,7 @@ def dk(Wk, n, gradient_n, t, k_old):
 
 
 def distance_between_points(x1, y1, x2, y2):
-    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+    return math.sqrt((float(x2) - x1) ** 2 + (float(y2) - y1) ** 2)
 
 

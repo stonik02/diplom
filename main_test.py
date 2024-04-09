@@ -6,8 +6,8 @@ from test_func import ray_path_calculation, main_func
 h_k = 0.03
 l_moda = 2
 f = 300
-inception = [2300, 4000]
-num_rays = 100
+inception = [8000, 3970]
+num_rays = 400
 
 if __name__ == '__main__':
     signal_arr, signal_on_receiver, t_arr, lines, result_ray, y_min, distance_min = main_func(h_k, l_moda, f, inception, num_rays)

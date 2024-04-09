@@ -2,8 +2,8 @@ from utils import *
 
 
 def f_k(steps, t):
-    fg = 1/t
-    delfa_f = fg/steps
+    fd = 1/t
+    delfa_f = fd/steps
     fk = []  # Объявляем массив fk и потом заполняем fk = i * delfa_f
 
     for i in range(steps):
@@ -22,7 +22,8 @@ def w_k(steps, pi, fk):
 def fi_wk(wk, result_ray, h_k, c, pi, l_moda):
     fi_wk_arr = []
 
-    for wi in wk:
+    for i in range(int(len(wk)/2)):
+        wi = wk[i]
         fi_wk_res = 0
         delta_ll = []
         for point in range(len(result_ray[0][0])):  # По кол-ву точек

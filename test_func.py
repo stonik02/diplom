@@ -32,7 +32,9 @@ def ray_path_calculation(h_k, l_moda, f, receiver, num_rays):
     lines_x = []
     lines_y = []
     flag = False
+    i = 0
     for i in range(num_rays):
+        i += 1
         alfa = i * pi / (num_rays / 2)
         k = [ql0 * math.cos(alfa), ql0 * math.sin(alfa)]
         r = inception
@@ -72,27 +74,30 @@ def ray_path_calculation(h_k, l_moda, f, receiver, num_rays):
             y_arr.append(y_point)
 
             distance_points = distance_between_points(x_point, y_point, receiver[0], receiver[1])
-            if distance_points < distance_min:
+            if distance_points < distance_min and distance_points < 200:
                 distance_min = distance_points
                 result_alfa = alfa
                 result_ray_x.clear()
                 result_ray_y.clear()
                 result_ray_x.append(x_arr)
                 result_ray_y.append(y_arr)
+                if distance_points < 70:
+                    break
 
         lines_x.append(x_arr)
         lines_y.append(y_arr)
-    return [lines_x, lines_y], [result_ray_x, result_ray_y, result_alfa], y_min, distance_min
+    steps_res = len(result_ray_y[0])
+    return [lines_x, lines_y], [result_ray_x, result_ray_y, result_alfa], y_min, distance_min, steps_res
 
 
 def main_func(h_k, l_moda, f, receiver, num_rays):
-    lines, result_ray, y_min, distance_min = ray_path_calculation(h_k, l_moda, f, receiver, num_rays)
+    lines, result_ray, y_min, distance_min, steps_res = ray_path_calculation(h_k, l_moda, f, receiver, num_rays)
 
-    signal_arr, t_arr = signal(f, t_signal, steps)
+    signal_arr, t_arr = signal(f, t_signal, steps_res)
     signal_fft = fft(signal_arr)  # Фурье сигнала
 
-    fk_arr = f_k(steps, t)
-    wk_arr = w_k(steps, pi, fk_arr)   # Объявляем массив фазовых набегов и заполняем его
+    fk_arr = f_k(steps_res, t)
+    wk_arr = w_k(steps_res, pi, fk_arr)   # Объявляем массив фазовых набегов и заполняем его
     fi_wk_res = fi_wk(wk_arr, result_ray, h_k, c, pi, l_moda)   # Считаем fi_wk = ql(wk) * delta_l
 
     # Считаем пришедший на приемник ряд фурье

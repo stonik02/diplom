@@ -79,7 +79,6 @@ def dk(Wk, n, gradient_n, t, k_old):
 
 
 def distance_between_points(x1, y1, x2, y2):
-
     return math.sqrt((float(x2) - x1) ** 2 + (float(y2) - y1) ** 2)
 
 

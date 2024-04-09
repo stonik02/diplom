@@ -1,83 +1,75 @@
 from matplotlib import pyplot as plt
+import numpy as np
 
-from test_func import main_function_test
+from test_func import ray_path_calculation, main_func
 
-pi = 3.14
+h_k = 0.03
+l_moda = 2
 f = 300
-Wk = 2 * pi * f
-# ql0 = ql(Wk, 1500, pi, 5000*0.02, 2)
-# print(ql0)
+inception = [2300, 4000]
+num_rays = 100
 
 if __name__ == '__main__':
-    n_arr, r_arr, gradient_arr, dk_arr, dr_arr, lines, h_arr = main_function_test([5000, 5000], 300)
-
-    # y_array = list(range(200, 10000, 100))
-    # n_test_array = []
-    # for y in y_array:
-    #     n = refractive_index_v2(y, Wk, 1500, 2, ql0, pi)
-    #     n_test_array.append(n)
+    signal_arr, signal_on_receiver, t_arr, lines, result_ray, y_min, distance_min = main_func(h_k, l_moda, f, inception, num_rays)
 
     plt.figure(figsize=(7, 5))
     for x, y in zip(lines[0], lines[1]):
-        plt.plot(x, y)
+        plt.plot(x, y, color='black')
     plt.title("График x y")
 
     plt.grid()
     plt.xlabel("x")
     plt.ylabel("y")
+    x_coords = []
+    y_coords = []
+    if len(result_ray) == 3:
+        x_coords = [coord for sublist in result_ray[0] for coord in sublist]
+        y_coords = [coord for sublist in result_ray[1] for coord in sublist]
+        print("Дистанция от луча до приемника = {}".format(distance_min))
+        plt.plot(x_coords, y_coords, color='red', label='')
+        plt.scatter(inception[0], inception[1], color='green', label='Приемник')
+#     plt.show()
 
+    plt.figure(figsize=(20, 5))
+    plt.plot(t_arr,  np.abs(signal_arr))
+    plt.title("Исходный сигнал")
+    plt.xlabel("t")
+    plt.ylabel("s")
+
+    plt.figure(figsize=(20, 5))
+    plt.plot(t_arr, np.abs(signal_on_receiver))
+    plt.title("Принятый сигнал")
+    plt.xlabel("t")
+    plt.ylabel("s")
+
+    plt.figure(figsize=(7, 5))
+    plt.plot(x_coords, y_coords, color='black')
+
+    plt.grid()
+    plt.xlabel("x")
+    plt.ylabel("y")
     plt.show()
 
 
-    # plt.figure(figsize=(7, 5))
-    # plt.plot(r_arr, h_arr, color='black')
-    # plt.title("Зависимость h от y")
-    #
-    # plt.xlabel("y")
-    # plt.ylabel("H")
 
-    # plt.figure(figsize=(12, 10))
-    # plt.subplot(2, 2, 1)
-    # plt.plot(r_arr, n_arr, color='black')
-    # plt.title("Зависимость n от y")
-    #
-    # plt.xlabel("y")
-    # plt.ylabel("n")
-    #
-    # plt.subplot(2, 2, 3)
-    # plt.plot( r_arr, gradient_arr, color='black')
-    # plt.title("Зависимость градиента от y")
-    #
-    # plt.xlabel("y")
-    # plt.ylabel("gradient")
-    #
-    # plt.subplot(2, 2, 2)
-    # plt.plot(r_arr, dr_arr, color='black')
-    # plt.title("Зависимость dr от y")
-    #
-    # plt.xlabel("y")
-    # plt.ylabel("dr")
-    #
-    # plt.subplot(2, 2, 4)
-    # plt.plot(r_arr, dk_arr, color='black')
-    # plt.title("Зависимость dk от y")
-    #
-    # plt.xlabel("y")
-    # plt.ylabel("dk")
-    #
-    #
+
+
+
+
+    # lines, result_ray, y_min, distance_min = ray_path_calculation(h_k, l_moda, f, inception, num_rays)
     # plt.figure(figsize=(7, 5))
     # for x, y in zip(lines[0], lines[1]):
-    #     plt.plot(x, y)
+    #     plt.plot(x, y, color='black')
     # plt.title("График x y")
+    #
+    # plt.grid()
     # plt.xlabel("x")
     # plt.ylabel("y")
     #
-    # plt.figure(figsize=(7, 5))
-    # plt.plot(y_array, n_test_array, color='black')
-    # plt.title("Зависимость n от y TEST")
-    #
-    # plt.xlabel("y")
-    # plt.ylabel("n")
+    # if len(result_ray) == 3:
+    #     x_coords = [coord for sublist in result_ray[0] for coord in sublist]
+    #     y_coords = [coord for sublist in result_ray[1] for coord in sublist]
+    #     print("Дистанция от луча до приемника = {}".format(distance_min))
+    #     plt.plot(x_coords, y_coords, color='red', label='')
+    #     plt.scatter(inception[0], inception[1], color='green', label='Приемник')
     # plt.show()
-

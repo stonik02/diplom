@@ -26,10 +26,10 @@ def _quit():
 
 
 # Создание canvas и графика
-def generate_scatter_chart(h_k, l_moda, f, priemnik, num_rays):
+def generate_scatter_chart(h_k, l_moda, f, inception, num_rays):
     global canvas
     global description
-    lines, result_lych, y_min, distance_min = main_function(h_k, l_moda, f, priemnik, num_rays)
+    lines, result_lych, y_min, distance_min = main_function(h_k, l_moda, f, inception, num_rays)
     if canvas:
         canvas.get_tk_widget().destroy()
     if description:
@@ -42,7 +42,7 @@ def generate_scatter_chart(h_k, l_moda, f, priemnik, num_rays):
         x_coords = [coord for sublist in result_lych[0] for coord in sublist]
         y_coords = [coord for sublist in result_lych[1] for coord in sublist]
         grafik.plot(x_coords, y_coords, color='red', label='')
-        grafik.scatter(priemnik[0], priemnik[1], color='green', label='Приемник')
+        grafik.scatter(inception[0], inception[1], color='green', label='Приемник')
     grafik.legend()
 
     canvas = FigureCanvasTkAgg(fig, master = frame_canvas)
@@ -90,14 +90,14 @@ def draw_graph():
         return
 
     try:
-        priemnik = txt_priemnik.get()
-        priemtik_arr = [float(x) for x in priemnik.split(",")]
+        inception = txt_inception.get()
+        inception_arr = [float(x) for x in inception.split(",")]
 
     except ValueError:
         messagebox.showinfo('Неверное значение координат приемника', 'Необходимо ввести числа в формате 1234, 4321')
         return
 
-    if priemtik_arr[0] < 0 or priemtik_arr[1] < 0 or priemtik_arr[0] > 30000 or priemtik_arr[1] > 30000:
+    if inception_arr[0] < 0 or inception_arr[1] < 0 or inception_arr[0] > 30000 or inception_arr[1] > 30000:
         messagebox.showinfo('Неверное значение координат приемника', 'Необходимо ввести неотрицательные числа в диапазоне 5000-30000')
 
     if f > 1000 or f < 10:
@@ -110,10 +110,10 @@ def draw_graph():
     if num_rays > 200 or num_rays < 60:
         messagebox.showinfo('Неверное значение кол-ва лучей', 'Необходимо ввести число в интервале 30-100')
 
-    if h_k > 0.06 or h_k < 0.02:
+    if h_k > 1000 or h_k < 0.004:
         messagebox.showinfo('Неверное значение коэффициента глубины', 'Необходимо ввести число в интервале 0.02 - 0.06')
 
-    generate_scatter_chart(h_k, l_moda, f, priemtik_arr, num_rays)
+    generate_scatter_chart(h_k, l_moda, f, inception_arr, num_rays)
 
 
 # Очистка графика
@@ -134,6 +134,7 @@ if __name__ == '__main__':
     root = Tk()
     root.wm_title("Моделирование сигналов")
     root.geometry("1200x800")
+    # root.geometry("1000x600")
     root.resizable(False, False)
 
 
@@ -148,7 +149,6 @@ if __name__ == '__main__':
                       side='right',
                       padx=20,
                       pady=20
-
                       )
 
     frame_canvas = Frame(master=frame_canvas_description,
@@ -165,10 +165,12 @@ if __name__ == '__main__':
                       pady=20
 
                       )
+    frame_canvas.pack_propagate(False)  # Фиксирует размер Frame
+    frame_canvas.grid_propagate(False)
 
     frame_description = Frame(master=frame_canvas_description,
-                              width=500,
-                              height=100,
+                              width=600,
+                              height=300,
                               borderwidth=1,
                               relief=SOLID,
                               padx=5,
@@ -180,8 +182,6 @@ if __name__ == '__main__':
                       pady=20
 
                       )
-    frame_canvas.pack_propagate(False)  # Фиксирует размер Frame
-    frame_canvas.grid_propagate(False)
 
     # Создание единого фрейма для кнопок и полей
     frame_main = Frame(root,
@@ -227,7 +227,7 @@ if __name__ == '__main__':
 
     # Создаем фрейма для текстовых полей ввода
     frame_entrys = Frame(frame_main,
-                         width=550,
+                         width=450,
                          height=40,
                          padx=1,
                          pady=1
@@ -309,35 +309,35 @@ if __name__ == '__main__':
                  )
 
     # Текстовое поле и описание получения координат приемника
-    lbl_priemnik = Label(frame_entrys,
-                         text="Укажите координаты приемника в формате x,y",
-                         font=("Arial Bold", 10))
-    lbl_priemnik.grid(row=1,
-                      column=0,
-                      padx=5,
-                      sticky="nsew"
-                      )
-    txt_priemnik = Entry(frame_entrys,
-                         width=15
-                         )
-    txt_priemnik.grid(row=1,
-                      column=1,
-                      padx=5,
-                      pady=15,
-                      sticky="nsew"
-                      )
-    txt_priemnik.insert(0, '2121, 7788')
+    lbl_inception = Label(frame_entrys,
+                          text="Укажите координаты приемника в формате x,y",
+                          font=("Arial Bold", 10))
+    lbl_inception.grid(row=1,
+                       column=0,
+                       padx=5,
+                       sticky="nsew"
+                       )
+    txt_inception = Entry(frame_entrys,
+                          width=15
+                          )
+    txt_inception.grid(row=1,
+                       column=1,
+                       padx=5,
+                       pady=15,
+                       sticky="nsew"
+                       )
+    txt_inception.insert(0, '2121, 7788')
 
     # Текстовое поле и описание получения номер моды
-    l_moda_priemnik = Label(frame_entrys,
-                            text="Укажите номер моды 1-7",
-                            font=("Arial Bold", 10)
-                            )
-    l_moda_priemnik.grid(row=2,
-                         column=0,
-                         padx=5,
-                         sticky="nsew"
-                         )
+    l_moda_ = Label(frame_entrys,
+                    text="Укажите номер моды 1-7",
+                    font=("Arial Bold", 10)
+                    )
+    l_moda_.grid(row=2,
+                 column=0,
+                 padx=5,
+                 sticky="nsew"
+                 )
     txt_l_moda = Entry(frame_entrys,
                        width=10
                        )
@@ -345,15 +345,15 @@ if __name__ == '__main__':
     txt_l_moda.insert(0, '3')
 
     # Текстовое поле и описание получения кол-ва лучей
-    num_rays_priemnik = Label(frame_entrys,
-                              text="Укажите колличество лучей 30-100",
-                              font=("Arial Bold", 10)
-                              )
-    num_rays_priemnik.grid(row=3,
-                           column=0,
-                           padx=5,
-                           sticky="nsew"
-                           )
+    num_rays = Label(frame_entrys,
+                     text="Укажите колличество лучей 30-100",
+                     font=("Arial Bold", 10)
+                     )
+    num_rays.grid(row=3,
+                  column=0,
+                  padx=5,
+                  sticky="nsew"
+                  )
     txt_num_rays = Entry(frame_entrys,
                          width=10)
     txt_num_rays.grid(row=3,
@@ -368,8 +368,8 @@ if __name__ == '__main__':
     """
     Сделать выпадающим списком
     """
-    h_k_priemnik = Label(frame_entrys, text="Укажите коэффициент глубины 0.02-0.06", font=("Arial Bold", 10))
-    h_k_priemnik.grid(row=4,
+    h_k_inception = Label(frame_entrys, text="Укажите коэффициент глубины 0.004-1000", font=("Arial Bold", 10))
+    h_k_inception.grid(row=4,
                       column=0,
                       padx=5,
                       sticky="nsew"

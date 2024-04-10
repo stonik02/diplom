@@ -6,7 +6,7 @@ pi = 3.14
 
 
 def signal_point(f, t):
-    return math.sin(2*pi*f*t)
+    return 1-t*math.sin(2*pi*f*t)
 
 
 def signal(f, t, steps):

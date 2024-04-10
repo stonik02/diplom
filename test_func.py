@@ -8,9 +8,8 @@ import cmath
 
 # t = 1e-3  # Один отрезок времени
 t = 1e-3  # Один отрезок времени
-steps = 6000  # Число шагов в цикле
-t_signal = 8e-4  # Один отрезок времени
-steps_signal = 1000  # Число шагов в цикле
+steps = 4000  # Число шагов в цикле
+steps_signal = 2000  # Число шагов в цикле
 c = 1500  # Скорость звука
 inception = [0, 3000]   # Источник
 pi = 3.14
@@ -36,6 +35,7 @@ def ray_path_calculation(h_k, l_moda, f, receiver, num_rays):
     for i in range(num_rays):
         i += 1
         alfa = i * pi / (num_rays / 2)
+        print(alfa)
         k = [ql0 * math.cos(alfa), ql0 * math.sin(alfa)]
         r = inception
         x_arr = []  # Список для координат x текущей линии
@@ -87,36 +87,48 @@ def ray_path_calculation(h_k, l_moda, f, receiver, num_rays):
         lines_x.append(x_arr)
         lines_y.append(y_arr)
     steps_res = len(result_ray_y[0])
+    print("Примерный угол для выпуска луча = {}".format(result_alfa))
     return [lines_x, lines_y], [result_ray_x, result_ray_y, result_alfa], y_min, distance_min, steps_res
 
 
-def main_func(h_k, l_moda, f, receiver, num_rays):
-    lines, result_ray, y_min, distance_min, steps_res = ray_path_calculation(h_k, l_moda, f, receiver, num_rays)
 
-    signal_arr, t_arr = signal(f, t_signal, steps_res)
+def main_func(h_k, l_moda, f, receiver):
+    # lines, result_ray, y_min, distance_min, steps_res = ray_path_calculation(h_k, l_moda, f, receiver, num_rays)
+
+    signal_arr, t_arr = signal(f, t, steps)
     signal_fft = fft(signal_arr)  # Фурье сигнала
 
-    fk_arr = f_k(steps_res, t)
-    wk_arr = w_k(steps_res, pi, fk_arr)   # Объявляем массив фазовых набегов и заполняем его
-    fi_wk_res = fi_wk(wk_arr, result_ray, h_k, c, pi, l_moda)   # Считаем fi_wk = ql(wk) * delta_l
+    fk_arr = f_k(steps, t)
+    wk_arr = w_k(steps, pi, fk_arr)   # Объявляем массив фазовых набегов и заполняем его
+    fi_wk_res = fi_wk(wk_arr, h_k, c, pi, l_moda, receiver, inception, v_dna, t)   # Считаем fi_wk = ql(wk) * delta_l
 
     # Считаем пришедший на приемник ряд фурье
     signal_fft_receiver1 = []
+    print(len(signal_fft))
+    print(len(fi_wk_res))
+
     for i in range(int(len(signal_fft)/2)):
         c_res = signal_fft[i] * cmath.exp((0+1j) * fi_wk_res[i])
         signal_fft_receiver1.append(c_res)
     signal_fft_receiver2 = []
     for i in reversed(signal_fft_receiver1):
         signal_fft_receiver2.append(i.conjugate())
-    signal_fft_receiver_result = signal_fft_receiver1 + signal_fft_receiver2
+    print(signal_fft_receiver1)
+    print(signal_fft_receiver2)
 
+
+    signal_fft_receiver_result = signal_fft_receiver1 + signal_fft_receiver2
     signal_on_receiver = ifft(signal_fft_receiver_result)   # Обратный фурье
+    signal_on_receiver[0] = np.real(signal_on_receiver[0])
+    seredina = int(len(signal_on_receiver)/2)
+    signal_on_receiver[seredina] = np.real(np.real(signal_on_receiver[seredina]))
 
     #
     # print("LEN: signal = {} fft = {} fk = {} wk = {} fi_wk = {} signal_fft_receiver_result = {}".
     #       format(len(signal_arr), len(signal_fft), len(fk), len(wk), len(fi_wk_res), len(signal_fft_receiver_result)))
+    print("signal_fft_receiver_result[1] = {} signal_fft_receiver_result[len-2] = {}".format(signal_fft_receiver_result[1], signal_fft_receiver_result[len(signal_fft_receiver_result)-2]))
 
-    return signal_arr, signal_on_receiver, t_arr, lines, result_ray, y_min, distance_min
+    return signal_arr, signal_on_receiver, t_arr
 
 
 
